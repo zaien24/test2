@@ -10,5 +10,5 @@ public interface MenuService {
 	HashMap<String, Object> insertMenu(MenuVO menuVO);
 
 	HashMap<String, Object> updateMenu(MenuVO menuVO);
-
+asdfasdfasdf
 }
