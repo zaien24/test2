@@ -14,7 +14,7 @@ import com.adminproject.menu.service.MenuVO;
 
 @Service("menuService")
 public class MenuServiceImpl implements MenuService {
-
+asdfasdf
 	private static final Logger logger = LoggerFactory.getLogger(MenuServiceImpl.class);
 
 	@Resource(name = "menuMapper")
