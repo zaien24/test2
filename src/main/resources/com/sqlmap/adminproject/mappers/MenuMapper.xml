@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adminproject.menu.service.impl.MenuMapper">
+
+	<select id="selectMenuList" resultType="menuVO" parameterType="menuVO">
+	/** [MenuMapper.xml][com.adminproject.menu.service.impl.MenuMapper.selectMenuList][메뉴 조회] **/
+		SELECT
+			MENU_CD, MENU_NM, MENU_LV, MENU_URL,
+			USE_YN, DP_YN, SORT_SEQ, REG_ID, REG_DT
+		FROM
+			TB_MENU
+		<where>
+			<if test="menuCd != null and menuCd != ''">
+				AND MENU_CD = #{menuCd}
+			</if>
+			<if test="upprMenuCd != null and upprMenuCd != ''">
+				AND UPPR_MENU_CD = #{upprMenuCd}
+			</if>
+			AND MENU_LV = #{menuLv}
+		</where>
+	</select>
+
+	<select id="selectMaxMenuCd" resultType="String" parameterType="menuVO">
+	/** [MenuMapper.xml][com.adminproject.menu.service.impl.MenuMapper.selectMaxMenuCd][메뉴 코드 채번] **/
+		<if test="menuLv eq 1">
+			SELECT
+				CONCAT('M',IFNULL(RPAD(LPAD(MAX(SUBSTRING(MENU_CD, 2, 2))+1, 2, 0), 6, 0), '010000')) AS MENU_CD
+			FROM TB_MENU
+		</if>
+		<if test="menuLv eq 2">
+			SELECT
+				CONCAT(SUBSTRING(#{upprMenuCd}, 1, 3), IFNULL(RPAD(LPAD(MAX(SUBSTRING(MENU_CD, 4,2))+1, 2, 0), 4, 0), '0100'))
+				 AS MENU_CD
+			FROM TB_MENU
+			WHERE MENU_LV = 2
+			AND UPPR_MENU_CD = #{upprMenuCd}
+		</if>
+	</select>
+
+	<insert id="insertMenu" parameterType="menuVO">
+	/** [MenuMapper.xml][com.adminproject.menu.service.impl.MenuMapper.insertMenu][메뉴 등록] **/
+		INSERT INTO TB_MENU
+			(MENU_CD, MENU_NM, MENU_LV, USE_YN, DP_YN, SORT_SEQ, REG_ID, REG_DT
+			<if test="menuUrl != null and menuUrl != ''">
+				, MENU_URL
+			</if>
+			<if test="upprMenuCd != null and upprMenuCd != ''">
+				, UPPR_MENU_CD
+			</if>
+			)
+		VALUES
+			(#{menuCd}, #{menuNm}, #{menuLv}, #{useYn}, #{dpYn}, #{sortSeq}, 'admin', DATE_FORMAT(NOW(), '%Y%m%d%H%i%S')
+			<if test="menuUrl != null and menuUrl != ''">
+				, #{menuUrl}
+			</if>
+			<if test="upprMenuCd != null and upprMenuCd != ''">
+				, #{upprMenuCd}
+			</if>
+			)
+	</insert>
+
+	<update id="updateMenu" parameterType="menuVO">
+	/** [MenuMapper.xml][com.adminproject.menu.service.impl.MenuMapper.updateMenu][메뉴 수정] **/
+		UPDATE TB_MENU
+		SET
+			MENU_NM = #{menuNm}
+			, MENU_URL = #{menuUrl}
+			, USE_YN = #{useYn}
+			, DP_YN = #{dpYn}
+			, SORT_SEQ = #{sortSeq}
+			, MOD_ID = 'admin'
+			, MOD_DT = DATE_FORMAT(NOW(), '%Y%m%d%H%i%S')
+		WHERE MENU_LV = #{menuLv}
+		AND MENU_CD = #{menuCd}
+	</update>
+
+</mapper>
